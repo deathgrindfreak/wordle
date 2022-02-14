@@ -55,8 +55,8 @@ fn determine_match(word: &String, guess: &String) -> Vec<MatchType> {
         );
     }
 
-    for i in 0..WORD_LENGTH {
-        if matches[i] == MatchType::NoMatch && leftover_chars.contains(guess.chars().nth(i).unwrap()) {
+    for (g, i) in guess.chars().zip(0..){
+        if matches[i] == MatchType::NoMatch && leftover_chars.contains(g) {
             matches[i] = MatchType::Misplaced;
         }
     }
@@ -103,6 +103,14 @@ mod test {
         assert_eq!(
             determine_match(&String::from("robot"), &String::from("robto")),
             vec![Match, Match, Match, Misplaced, Misplaced]
+        );
+    }
+
+    #[test]
+    fn test_spine_every() {
+        assert_eq!(
+            determine_match(&String::from("spine"), &String::from("every")),
+            vec![Misplaced, NoMatch, Misplaced, NoMatch, NoMatch]
         );
     }
 
