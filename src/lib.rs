@@ -105,6 +105,14 @@ mod test {
     }
 
     #[test]
+    fn test_robot_roboo() {
+        assert_eq!(
+            determine_match(&String::from("robot"), &String::from("rooot")),
+            vec![Match, Match, NoMatch, Match, Match]
+        );
+    }
+
+    #[test]
     fn test_rebus_arise() {
         assert_eq!(
             determine_match(&String::from("rebus"), &String::from("arise")),
