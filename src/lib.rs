@@ -10,13 +10,15 @@ enum MatchType {
     NoMatch,
 }
 
-pub fn play_game(word: String) {
+pub fn play_game(word: String, word_list: Vec<&str>) {
     let mut guesses: i32 = 0;
     loop {
         match prompt_word() {
             Ok(guess) => {
                 if guess.len() != WORD_LENGTH {
                     println!("Not a {} letter word.", WORD_LENGTH);
+                } else if !word_list.contains(&guess.as_str()) {
+                    println!("Word is not a word in the list");
                 } else {
                     guesses += 1;
                     let matches = determine_match(&word, &guess);
