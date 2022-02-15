@@ -1,14 +1,25 @@
 extern crate rand;
 extern crate ctrlc;
+extern crate clap;
+
 extern crate wordle;
 
+use clap::Parser;
 use rand::{thread_rng, Rng};
 use std::{error::Error, process};
 
 static WORD_FILE: &'static str = include_str!("../include/words");
 
+#[derive(Parser, Debug)]
+struct Args {
+    /// Enables hard mode: Squares marked green and yellow must be used in subsequent answers.
+    #[clap(long)]
+    hard: bool,
+}
+
 fn main() {
-    let word_list: Vec<&str> = WORD_FILE.lines().collect();
+    let args = Args::parse();
+    let word_list: Vec<String> = WORD_FILE.lines().map(|s| s.to_string()).collect();
 
     match pick_random_word(&word_list) {
         Ok(word) => {
@@ -20,7 +31,11 @@ fn main() {
                 process::exit(0);
             }).expect("Could not set Ctrl-C handler");
 
-            wordle::play_game(word, word_list)
+            wordle::play_game(wordle::Config::new(
+                word,
+                word_list.into_iter().collect(),
+                args.hard
+            ))
         },
         Err(error) => {
             println!("An error occurred: {}", error);
@@ -29,7 +44,7 @@ fn main() {
     }
 }
 
-fn pick_random_word(words: &Vec<&str>) -> Result<String, Box<dyn Error>> {
+fn pick_random_word(words: &Vec<String>) -> Result<String, Box<dyn Error>> {
     let mut rnd = thread_rng();
     let i: usize = rnd.gen_range(0..words.len());
 
